@@ -67,6 +67,20 @@ Registration is **not** self-service. New businesses are created via a hidden pa
 enter the admin key plus the business/owner details, and hand the resulting email + password
 to the business owner so they can log in at `/login`. There is no public signup route.
 
+## Deployment
+
+The backend serves the built frontend itself in production (single origin, no CORS/cross-site
+cookie issues). Deploy via Render using the included `render.yaml` Blueprint:
+
+1. On [render.com](https://render.com), **New +** → **Blueprint** → connect this GitHub repo.
+2. Render reads `render.yaml` and provisions a free Postgres database plus a free web service,
+   wiring `DATABASE_URL` automatically and generating `JWT_SECRET`/`ADMIN_KEY` for you.
+3. After the first deploy, open the web service's **Environment** tab to reveal the generated
+   `ADMIN_KEY` — you'll need it at `/admin/create-business` to create the first real business.
+
+Free-tier notes: the web service sleeps after 15 minutes idle (cold start ~30-60s on the next
+request), and the free Postgres database is deleted after 90 days unless upgraded.
+
 ## Folder structure
 
 ```
