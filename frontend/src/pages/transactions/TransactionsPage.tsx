@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatDate, formatMoney, todayIso } from "../../lib/format";
 import { Badge, Button, Card, DataTable, DateRangePicker, Input, Label, Modal, Select, SearchInput } from "../../components/ui";
+import { AddCategoryModal } from "../../components/AddCategoryModal";
 import type { Category, Expense, Income, Sale } from "../../types";
 
 type Tab = "income" | "expense" | "sales";
@@ -281,6 +282,7 @@ function ExpenseSection({ modalOpen, onOpenModal, onCloseModal }: { modalOpen: b
         open={modalOpen || !!editing}
         initial={editing}
         categories={categories}
+        onCategoryCreated={(c) => setCategories((prev) => [...prev, c])}
         onClose={() => {
           setEditing(null);
           onCloseModal();
@@ -299,16 +301,19 @@ function ExpenseFormModal({
   open,
   initial,
   categories,
+  onCategoryCreated,
   onClose,
   onSaved,
 }: {
   open: boolean;
   initial: Expense | null;
   categories: Category[];
+  onCategoryCreated?: (category: Category) => void;
   onClose: () => void;
   onSaved: () => void;
 }) {
   const { t } = useLanguage();
+  const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? "");
   const [amount, setAmount] = useState(String(initial?.amount ?? ""));
   const [description, setDescription] = useState(initial?.description ?? "");
@@ -340,14 +345,19 @@ function ExpenseFormModal({
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <Label>{t("expense.category")}</Label>
-          <Select value={categoryId ?? ""} onChange={(e) => setCategoryId(e.target.value)}>
-            <option value="">-</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
+          <div className="flex gap-2">
+            <Select value={categoryId ?? ""} onChange={(e) => setCategoryId(e.target.value)}>
+              <option value="">-</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+            <Button type="button" variant="expense" outline onClick={() => setAddCategoryOpen(true)}>
+              +
+            </Button>
+          </div>
         </div>
         <div>
           <Label>{t("expense.amount")}</Label>
@@ -365,6 +375,17 @@ function ExpenseFormModal({
           {t("common.save")}
         </Button>
       </form>
+
+      <AddCategoryModal
+        open={addCategoryOpen}
+        type="EXPENSE"
+        onClose={() => setAddCategoryOpen(false)}
+        onCreated={(category) => {
+          setAddCategoryOpen(false);
+          setCategoryId(category.id);
+          onCategoryCreated?.(category);
+        }}
+      />
     </Modal>
   );
 }

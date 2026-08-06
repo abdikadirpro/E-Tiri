@@ -117,6 +117,7 @@ export function ProductDetailPage() {
         open={editing}
         initial={product}
         categories={categories}
+        onCategoryCreated={(c) => setCategories((prev) => [...prev, c])}
         onClose={() => setEditing(false)}
         onSaved={() => {
           setEditing(false);

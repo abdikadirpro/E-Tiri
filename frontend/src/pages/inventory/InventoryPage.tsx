@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatMoney } from "../../lib/format";
 import { Badge, Button, Card, DataTable, Input, Label, Modal, Select, SearchInput } from "../../components/ui";
+import { AddCategoryModal } from "../../components/AddCategoryModal";
 import type { Category, Product, StockMovementType } from "../../types";
 
 export function InventoryPage() {
@@ -128,6 +129,7 @@ export function InventoryPage() {
         open={modalOpen || !!editing}
         initial={editing}
         categories={categories}
+        onCategoryCreated={(c) => setCategories((prev) => [...prev, c])}
         onClose={closeModal}
         onSaved={() => {
           closeModal();
@@ -246,16 +248,19 @@ export function ProductFormModal({
   open,
   initial,
   categories,
+  onCategoryCreated,
   onClose,
   onSaved,
 }: {
   open: boolean;
   initial: Product | null;
   categories: Category[];
+  onCategoryCreated?: (category: Category) => void;
   onClose: () => void;
   onSaved: () => void;
 }) {
   const { t } = useLanguage();
+  const [addCategoryOpen, setAddCategoryOpen] = useState(false);
   const [form, setForm] = useState({
     name: initial?.name ?? "",
     barcode: initial?.barcode ?? "",
@@ -320,14 +325,19 @@ export function ProductFormModal({
         </div>
         <div>
           <Label>{t("inventory.category")}</Label>
-          <Select value={form.categoryId ?? ""} onChange={(e) => update("categoryId", e.target.value)}>
-            <option value="">-</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
+          <div className="flex gap-2">
+            <Select value={form.categoryId ?? ""} onChange={(e) => update("categoryId", e.target.value)}>
+              <option value="">-</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+            <Button type="button" variant="reports" outline onClick={() => setAddCategoryOpen(true)}>
+              +
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -357,6 +367,17 @@ export function ProductFormModal({
           {t("common.save")}
         </Button>
       </form>
+
+      <AddCategoryModal
+        open={addCategoryOpen}
+        type="PRODUCT"
+        onClose={() => setAddCategoryOpen(false)}
+        onCreated={(category) => {
+          setAddCategoryOpen(false);
+          update("categoryId", category.id);
+          onCategoryCreated?.(category);
+        }}
+      />
     </Modal>
   );
 }
