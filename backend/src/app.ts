@@ -7,6 +7,7 @@ import { errorMiddleware } from "./middleware/error.middleware";
 import { notFoundMiddleware } from "./middleware/notFound.middleware";
 import { authMiddleware } from "./middleware/auth.middleware";
 import { adminAuthMiddleware } from "./middleware/adminAuth.middleware";
+import { serializeDecimalsMiddleware } from "./middleware/serializeDecimals.middleware";
 
 import authRoutes from "./modules/auth/auth.routes";
 import adminRoutes from "./modules/admin/admin.routes";
@@ -28,6 +29,7 @@ const app = express();
 app.use(cors({ origin: env.corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(serializeDecimalsMiddleware);
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
