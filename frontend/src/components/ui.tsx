@@ -177,12 +177,14 @@ export function Modal({
   title,
   children,
   size = "md",
+  headerClassName = "",
 }: {
   open: boolean;
   onClose: () => void;
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   size?: "md" | "lg";
+  headerClassName?: string;
 }) {
   if (!open) return null;
   const maxWidth = size === "lg" ? "max-w-3xl" : "max-w-md";
@@ -192,11 +194,13 @@ export function Modal({
       onClick={onClose}
     >
       <div
-        className={`max-h-[90vh] w-full ${maxWidth} overflow-y-auto rounded-t-2xl bg-white p-5 shadow-2xl ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10 sm:rounded-2xl`}
+        className={`max-h-[90vh] w-full ${maxWidth} overflow-y-auto rounded-t-2xl bg-white shadow-2xl ring-1 ring-black/5 dark:bg-gray-900 dark:ring-white/10 sm:rounded-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+        <div className={`flex items-center justify-between gap-3 rounded-t-2xl px-5 py-4 ${headerClassName}`}>
+          <div className="flex-1">
+            {typeof title === "string" ? <h2 className="text-lg font-semibold tracking-tight">{title}</h2> : title}
+          </div>
           <button
             onClick={onClose}
             className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
@@ -205,7 +209,7 @@ export function Modal({
             ✕
           </button>
         </div>
-        {children}
+        <div className="px-5 pb-5 pt-1">{children}</div>
       </div>
     </div>
   );

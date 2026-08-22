@@ -25,7 +25,19 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
   const prices = PRICES[period];
 
   return (
-    <Modal open={open} onClose={close} title={confirmed ? t("upgrade.title") : t("upgrade.choosePlan")} size={confirmed ? "md" : "lg"}>
+    <Modal
+      open={open}
+      onClose={close}
+      size={confirmed ? "md" : "lg"}
+      headerClassName={confirmed ? "" : "bg-gray-50 dark:bg-gray-800/60 border-b border-gray-100 dark:border-gray-800"}
+      title={
+        confirmed ? (
+          t("upgrade.title")
+        ) : (
+          <h2 className="text-center text-xl font-bold tracking-tight sm:text-2xl">{t("upgrade.choosePlan")}</h2>
+        )
+      }
+    >
       {confirmed ? (
         <>
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
@@ -37,7 +49,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
           </Button>
         </>
       ) : (
-        <div>
+        <div className="pt-4">
           <div className="mb-6 flex justify-center gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
             {(["monthly", "sixMonth", "annual"] as Period[]).map((p) => (
               <button
@@ -136,45 +148,45 @@ function PlanCard({
 }) {
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border p-5 transition-all duration-200 ${
+      className={`flex flex-col overflow-hidden rounded-2xl border bg-white transition-all duration-200 dark:bg-gray-900 ${
         highlight
-          ? "border-income/40 bg-white shadow-lg shadow-income/10 ring-1 ring-income/20 sm:-translate-y-2 dark:bg-gray-900"
-          : "border-gray-200 bg-white hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+          ? "border-income/40 shadow-lg shadow-income/10 sm:-translate-y-2"
+          : "border-gray-200 hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800"
       }`}
     >
       {highlight && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-income px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
-          {badgeLabel}
-        </span>
+        <div className="bg-income py-1.5 text-center text-[11px] font-bold uppercase tracking-wide text-white">{badgeLabel}</div>
       )}
-      <div className="mb-3 flex items-center justify-between">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-xl text-lg ${iconTint}`}>{icon}</span>
-        {!highlight && badgeLabel && (
-          <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-            {badgeLabel}
-          </span>
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-3 flex items-center gap-2">
+          <span className={`flex h-9 w-9 items-center justify-center rounded-xl text-base ${iconTint}`}>{icon}</span>
+          {!highlight && badgeLabel && (
+            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+              {badgeLabel}
+            </span>
+          )}
+        </div>
+        <h3 className="text-lg font-bold tracking-tight">{name}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{description}</p>
+        <div className="mt-4">
+          <span className="text-3xl font-bold tabular-nums tracking-tight">{price}</span>
+          {priceSuffix && <p className="mt-0.5 text-xs font-medium text-gray-400">{priceSuffix}</p>}
+        </div>
+        <div className="my-4 border-t border-gray-100 dark:border-gray-800" />
+        <ul className="flex-1 space-y-2.5 text-sm">
+          {features.map((f) => (
+            <li key={f} className="flex items-start gap-2 text-gray-600 dark:text-gray-300">
+              <CheckIcon className={`mt-0.5 h-4 w-4 flex-shrink-0 ${highlight ? "text-income" : "text-dashboard"}`} />
+              {f}
+            </li>
+          ))}
+        </ul>
+        {onSelect && (
+          <Button variant={highlight ? "income" : "dashboard"} outline={!highlight} className="mt-5 w-full" onClick={onSelect}>
+            {selectLabel}
+          </Button>
         )}
       </div>
-      <h3 className="text-lg font-bold tracking-tight">{name}</h3>
-      <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{description}</p>
-      <p className="mt-4 tracking-tight">
-        <span className="text-3xl font-bold tabular-nums">{price}</span>
-        {priceSuffix && <span className="ml-1 text-sm font-medium text-gray-400">{priceSuffix}</span>}
-      </p>
-      <div className="my-4 border-t border-gray-100 dark:border-gray-800" />
-      <ul className="flex-1 space-y-2.5 text-sm">
-        {features.map((f) => (
-          <li key={f} className="flex items-start gap-2 text-gray-600 dark:text-gray-300">
-            <CheckIcon className={`mt-0.5 h-4 w-4 flex-shrink-0 ${highlight ? "text-income" : "text-dashboard"}`} />
-            {f}
-          </li>
-        ))}
-      </ul>
-      {onSelect && (
-        <Button variant={highlight ? "income" : "dashboard"} outline={!highlight} className="mt-5 w-full" onClick={onSelect}>
-          {selectLabel}
-        </Button>
-      )}
     </div>
   );
 }
