@@ -13,18 +13,24 @@ type Tab = "income" | "expense" | "sales";
 export function TransactionsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useLanguage();
-  const [tab, setTab] = useState<Tab>("income");
+  const [tab, setTab] = useState<Tab>(() => {
+    const initial = searchParams.get("tab");
+    return initial === "income" || initial === "expense" || initial === "sales" ? initial : "income";
+  });
   const [incomeModalOpen, setIncomeModalOpen] = useState(searchParams.get("add") === "income");
   const [expenseModalOpen, setExpenseModalOpen] = useState(searchParams.get("add") === "expense");
 
   useEffect(() => {
     const add = searchParams.get("add");
+    const tabParam = searchParams.get("tab");
     if (add === "income") {
       setTab("income");
       setIncomeModalOpen(true);
     } else if (add === "expense") {
       setTab("expense");
       setExpenseModalOpen(true);
+    } else if (tabParam === "income" || tabParam === "expense" || tabParam === "sales") {
+      setTab(tabParam);
     }
   }, [searchParams]);
 

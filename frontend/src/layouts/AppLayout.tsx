@@ -1,25 +1,54 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { BottomNav } from "../components/nav/BottomNav";
-import { FabQuickActions } from "../components/nav/FabQuickActions";
+import { Sidebar } from "../components/nav/Sidebar";
+import { QuickActionsMenu } from "../components/nav/QuickActionsMenu";
+import { UserMenu } from "../components/nav/UserMenu";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
 export function AppLayout() {
   const { business } = useAuth();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen pb-20">
-      <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 px-4 py-2 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
-          <img src={logo} alt="e-Tiri" className="h-9 w-9 rounded-lg object-contain" />
-          <span className="text-sm text-gray-500 dark:text-gray-400">{business?.name}</span>
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileNavOpen(false)} />
+          <div className="relative z-10 h-full">
+            <Sidebar onNavigate={() => setMobileNavOpen(false)} />
+          </div>
         </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-4">
-        <Outlet />
-      </main>
-      <FabQuickActions />
-      <BottomNav />
+      )}
+
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2.5 dark:border-gray-800 dark:bg-gray-900">
+          <div className="flex items-center gap-3">
+            <button
+              className="text-xl text-gray-500 md:hidden"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Open menu"
+            >
+              ☰
+            </button>
+            <img src={logo} alt="e-Tiri" className="h-8 w-8 rounded-lg object-contain" />
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{business?.name}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <QuickActionsMenu />
+            <UserMenu />
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto px-4 py-4">
+          <div className="mx-auto max-w-6xl">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

@@ -139,6 +139,10 @@ export interface DashboardSummary {
   stockOnHand: number;
   stockValue: number;
   lowStockCount: number;
+  outOfStockCount: number;
+  todaySales: number;
+  debtReceivable: number;
+  debtPayable: number;
   recentActivity: {
     income: Income[];
     expenses: Expense[];

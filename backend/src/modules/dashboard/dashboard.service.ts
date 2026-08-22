@@ -6,20 +6,38 @@ export async function getSummary(businessId: string, from?: unknown, to?: unknow
   const dateWhere = dateRange ? { date: dateRange } : {};
   const createdAtWhere = dateRange ? { createdAt: dateRange } : {};
 
-  const [incomeAgg, salesAgg, expenseAgg, saleItemsForCogs, products, recentIncome, recentExpenses, recentSales] =
-    await Promise.all([
-      prisma.income.aggregate({ where: { businessId, ...dateWhere }, _sum: { amount: true } }),
-      prisma.sale.aggregate({ where: { businessId, ...createdAtWhere }, _sum: { total: true, amountPaid: true } }),
-      prisma.expense.aggregate({ where: { businessId, ...dateWhere }, _sum: { amount: true } }),
-      prisma.saleItem.findMany({
-        where: { sale: { businessId, ...createdAtWhere } },
-        select: { quantity: true, product: { select: { costPrice: true } } },
-      }),
-      prisma.product.findMany({ where: { businessId, isActive: true }, select: { stockQty: true, costPrice: true, lowStockThreshold: true } }),
-      prisma.income.findMany({ where: { businessId }, orderBy: { date: "desc" }, take: 5 }),
-      prisma.expense.findMany({ where: { businessId }, orderBy: { date: "desc" }, take: 5, include: { category: true } }),
-      prisma.sale.findMany({ where: { businessId }, orderBy: { createdAt: "desc" }, take: 5, include: { customer: true } }),
-    ]);
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+  const [
+    incomeAgg,
+    salesAgg,
+    expenseAgg,
+    saleItemsForCogs,
+    products,
+    recentIncome,
+    recentExpenses,
+    recentSales,
+    todaySalesAgg,
+    receivableAgg,
+    payableAgg,
+  ] = await Promise.all([
+    prisma.income.aggregate({ where: { businessId, ...dateWhere }, _sum: { amount: true } }),
+    prisma.sale.aggregate({ where: { businessId, ...createdAtWhere }, _sum: { total: true, amountPaid: true } }),
+    prisma.expense.aggregate({ where: { businessId, ...dateWhere }, _sum: { amount: true } }),
+    prisma.saleItem.findMany({
+      where: { sale: { businessId, ...createdAtWhere } },
+      select: { quantity: true, product: { select: { costPrice: true } } },
+    }),
+    prisma.product.findMany({ where: { businessId, isActive: true }, select: { stockQty: true, costPrice: true, lowStockThreshold: true } }),
+    prisma.income.findMany({ where: { businessId }, orderBy: { date: "desc" }, take: 5 }),
+    prisma.expense.findMany({ where: { businessId }, orderBy: { date: "desc" }, take: 5, include: { category: true } }),
+    prisma.sale.findMany({ where: { businessId }, orderBy: { createdAt: "desc" }, take: 5, include: { customer: true } }),
+    prisma.sale.aggregate({ where: { businessId, createdAt: { gte: todayStart, lte: todayEnd } }, _sum: { total: true } }),
+    prisma.debt.aggregate({ where: { businessId, direction: "RECEIVABLE" }, _sum: { balance: true } }),
+    prisma.debt.aggregate({ where: { businessId, direction: "PAYABLE" }, _sum: { balance: true } }),
+  ]);
 
   const manualIncome = Number(incomeAgg._sum.amount ?? 0);
   const salesRevenue = Number(salesAgg._sum.total ?? 0);
@@ -36,6 +54,10 @@ export async function getSummary(businessId: string, from?: unknown, to?: unknow
   const stockValue = products.reduce((sum, p) => sum + p.stockQty * Number(p.costPrice), 0);
   const stockOnHand = products.reduce((sum, p) => sum + p.stockQty, 0);
   const lowStockCount = products.filter((p) => p.stockQty <= p.lowStockThreshold).length;
+  const outOfStockCount = products.filter((p) => p.stockQty <= 0).length;
+  const todaySales = Number(todaySalesAgg._sum.total ?? 0);
+  const debtReceivable = Number(receivableAgg._sum.balance ?? 0);
+  const debtPayable = Number(payableAgg._sum.balance ?? 0);
 
   return {
     totalIncome,
@@ -46,6 +68,10 @@ export async function getSummary(businessId: string, from?: unknown, to?: unknow
     stockOnHand,
     stockValue,
     lowStockCount,
+    outOfStockCount,
+    todaySales,
+    debtReceivable,
+    debtPayable,
     recentActivity: {
       income: recentIncome,
       expenses: recentExpenses,
