@@ -4,7 +4,7 @@ import { analyticsApi, CashFlowPoint, dashboardApi } from "../../api/endpoints";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatMoney } from "../../lib/format";
-import { Card, EyeIcon, EyeOffIcon, StatCard } from "../../components/ui";
+import { Button, Card, EyeIcon, EyeOffIcon, LockIcon, Modal, StatCard } from "../../components/ui";
 import type { DashboardSummary } from "../../types";
 
 export function DashboardPage() {
@@ -13,6 +13,7 @@ export function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [amountsHidden, setAmountsHidden] = useState(() => localStorage.getItem("e-tiri-hide-amounts") === "true");
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   useEffect(() => {
     dashboardApi
@@ -78,6 +79,11 @@ export function DashboardPage() {
         <TrendCard title={t("dashboard.expenseTrend")} field="cashOut" variant="expense" />
       </div>
 
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <LockedPreviewCard title={t("upgrade.debtSummary")} onClick={() => setUpgradeOpen(true)} />
+        <LockedPreviewCard title={t("upgrade.productInsights")} onClick={() => setUpgradeOpen(true)} />
+      </div>
+
       <div className="grid grid-cols-4 gap-2">
         <Link to="/transactions?add=income" className="rounded-lg bg-income py-3 text-center text-xs font-semibold text-white">
           ➕ {t("quick.addIncome")}
@@ -116,7 +122,30 @@ export function DashboardPage() {
           ))}
         </ul>
       </Card>
+
+      <Modal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} title={t("upgrade.title")}>
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
+          <LockIcon className="h-7 w-7" />
+        </div>
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.message")}</p>
+        <Button className="mt-4 w-full" onClick={() => setUpgradeOpen(false)}>
+          {t("common.cancel")}
+        </Button>
+      </Modal>
     </div>
+  );
+}
+
+function LockedPreviewCard({ title, onClick }: { title: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="text-left">
+      <Card className="flex flex-col items-center justify-center gap-2 py-8 text-center opacity-70 transition hover:opacity-100">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800">
+          <LockIcon className="h-5 w-5" />
+        </span>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+      </Card>
+    </button>
   );
 }
 

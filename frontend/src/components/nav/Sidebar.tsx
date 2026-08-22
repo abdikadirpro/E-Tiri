@@ -8,6 +8,7 @@ interface NavItem {
   icon: string;
   end?: boolean;
   matchTab?: string;
+  premium?: boolean;
 }
 
 const items: NavItem[] = [
@@ -16,10 +17,10 @@ const items: NavItem[] = [
   { to: "/transactions?tab=sales", key: "sales.title", icon: "🛒", matchTab: "sales" },
   { to: "/transactions?tab=income", key: "income.title", icon: "➕", matchTab: "income" },
   { to: "/transactions?tab=expense", key: "expense.title", icon: "➖", matchTab: "expense" },
-  { to: "/debts", key: "debts.title", icon: "💳" },
+  { to: "/debts", key: "debts.title", icon: "💳", premium: true },
   { to: "/customers", key: "customers.title", icon: "👥" },
   { to: "/suppliers", key: "suppliers.title", icon: "🏭" },
-  { to: "/reports", key: "reports.title", icon: "📊" },
+  { to: "/reports", key: "reports.title", icon: "📊", premium: true },
   { to: "/settings", key: "settings.title", icon: "⚙️" },
 ];
 
@@ -51,7 +52,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 }}
               >
                 <span className="text-base">{item.icon}</span>
-                {t(item.key)}
+                <span className="flex-1">{t(item.key)}</span>
+                {item.premium && (
+                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">
+                    {t("upgrade.premiumBadge")}
+                  </span>
+                )}
               </NavLink>
             </li>
           );
