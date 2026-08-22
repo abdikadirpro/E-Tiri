@@ -5,6 +5,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { AppLayout } from "./layouts/AppLayout";
 import { LoginPage } from "./pages/auth/LoginPage";
+import { SignupPage } from "./pages/auth/SignupPage";
 import { CreateBusinessPage } from "./pages/admin/CreateBusinessPage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
 import { TransactionsPage } from "./pages/transactions/TransactionsPage";
@@ -27,6 +28,7 @@ export default function App() {
           <AuthProvider>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route path="/admin/create-business" element={<CreateBusinessPage />} />
 
               <Route element={<ProtectedRoute />}>

@@ -15,6 +15,12 @@ function setAuthCookie(res: Response, token: string) {
   });
 }
 
+export const signup = asyncHandler(async (req: Request, res: Response) => {
+  const { token, user, business } = await authService.signup(req.body);
+  setAuthCookie(res, token);
+  res.status(201).json({ user, business });
+});
+
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { token, user, business } = await authService.login(req.body);
   setAuthCookie(res, token);

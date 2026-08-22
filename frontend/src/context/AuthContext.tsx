@@ -8,6 +8,7 @@ interface AuthContextValue {
   business: Business | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (data: { businessName: string; name: string; email: string; password: string; currency?: string }) => Promise<void>;
   logout: () => Promise<void>;
   setBusiness: (business: Business) => void;
 }
@@ -43,6 +44,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLang(business.language.toLowerCase() as "so" | "en");
   }
 
+  async function signup(data: { businessName: string; name: string; email: string; password: string; currency?: string }) {
+    const { user, business } = await authApi.signup(data);
+    setUser(user);
+    setBusinessState(business);
+    setLang(business.language.toLowerCase() as "so" | "en");
+  }
+
   async function logout() {
     await authApi.logout();
     setUser(null);
@@ -51,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, business, loading, login, logout, setBusiness: setBusinessState }}
+      value={{ user, business, loading, login, signup, logout, setBusiness: setBusinessState }}
     >
       {children}
     </AuthContext.Provider>

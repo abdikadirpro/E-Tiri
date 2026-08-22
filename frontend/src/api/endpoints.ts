@@ -17,6 +17,8 @@ import type {
 
 // ---------- auth ----------
 export const authApi = {
+  signup: (data: { businessName: string; name: string; email: string; password: string; currency?: string }) =>
+    client.post<{ user: User; business: Business }>("/auth/signup", data).then((r) => r.data),
   login: (data: { email: string; password: string }) =>
     client.post<{ user: User; business: Business }>("/auth/login", data).then((r) => r.data),
   me: () => client.get<{ user: User; business: Business }>("/auth/me").then((r) => r.data),
