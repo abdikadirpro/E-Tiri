@@ -12,6 +12,7 @@ export function DashboardPage() {
   const { t } = useLanguage();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [amountsHidden, setAmountsHidden] = useState(() => localStorage.getItem("e-tiri-hide-amounts") === "true");
 
   useEffect(() => {
     dashboardApi
@@ -20,15 +21,33 @@ export function DashboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("e-tiri-hide-amounts", String(amountsHidden));
+  }, [amountsHidden]);
+
   const currency = business?.currency ?? "USD";
 
   if (loading) return <p className="py-10 text-center text-gray-400">{t("common.loading")}</p>;
   if (!summary) return null;
 
+  function money(value: number) {
+    return amountsHidden ? "••••••" : formatMoney(value, currency);
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">{t("dashboard.title")}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold">{t("dashboard.title")}</h1>
+          <button
+            onClick={() => setAmountsHidden((v) => !v)}
+            className="text-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            aria-label={amountsHidden ? "Show amounts" : "Hide amounts"}
+            title={amountsHidden ? "Show amounts" : "Hide amounts"}
+          >
+            {amountsHidden ? "🙈" : "👁️"}
+          </button>
+        </div>
         <Link to="/transactions/sales/new" className="rounded-lg bg-dashboard px-4 py-2 text-sm font-semibold text-white">
           🛒 {t("quick.newSale")}
         </Link>
@@ -44,14 +63,14 @@ export function DashboardPage() {
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard label={t("dashboard.totalIncome")} value={formatMoney(summary.totalIncome, currency)} variant="income" />
-        <StatCard label={t("dashboard.todaySales")} value={formatMoney(summary.todaySales, currency)} variant="dashboard" />
-        <StatCard label={t("dashboard.totalExpenses")} value={formatMoney(summary.totalExpenses, currency)} variant="expense" />
-        <StatCard label={t("dashboard.profit")} value={formatMoney(summary.profit, currency)} variant="dashboard" />
+        <StatCard label={t("dashboard.totalIncome")} value={money(summary.totalIncome)} variant="income" />
+        <StatCard label={t("dashboard.todaySales")} value={money(summary.todaySales)} variant="dashboard" />
+        <StatCard label={t("dashboard.totalExpenses")} value={money(summary.totalExpenses)} variant="expense" />
+        <StatCard label={t("dashboard.profit")} value={money(summary.profit)} variant="dashboard" />
         <StatCard label={t("dashboard.lowStock")} value={summary.lowStockCount} variant="reports" />
         <StatCard label={t("dashboard.outOfStock")} value={summary.outOfStockCount} variant="expense" />
-        <StatCard label={t("debts.receivable")} value={formatMoney(summary.debtReceivable, currency)} variant="income" />
-        <StatCard label={t("debts.payable")} value={formatMoney(summary.debtPayable, currency)} variant="expense" />
+        <StatCard label={t("debts.receivable")} value={money(summary.debtReceivable)} variant="income" />
+        <StatCard label={t("debts.payable")} value={money(summary.debtPayable)} variant="expense" />
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -80,19 +99,19 @@ export function DashboardPage() {
           {summary.recentActivity.sales.map((s) => (
             <li key={s.id} className="flex justify-between border-b border-gray-100 pb-2 last:border-0 dark:border-gray-800">
               <span>🛒 {t("sales.title")} #{s.saleNumber}</span>
-              <span className="font-medium text-dashboard">{formatMoney(s.total, currency)}</span>
+              <span className="font-medium text-dashboard">{money(s.total)}</span>
             </li>
           ))}
           {summary.recentActivity.income.map((i) => (
             <li key={i.id} className="flex justify-between border-b border-gray-100 pb-2 last:border-0 dark:border-gray-800">
               <span>➕ {i.source}</span>
-              <span className="font-medium text-income">{formatMoney(i.amount, currency)}</span>
+              <span className="font-medium text-income">{money(i.amount)}</span>
             </li>
           ))}
           {summary.recentActivity.expenses.map((e) => (
             <li key={e.id} className="flex justify-between border-b border-gray-100 pb-2 last:border-0 dark:border-gray-800">
               <span>➖ {e.description ?? e.category?.name ?? t("expense.title")}</span>
-              <span className="font-medium text-expense">{formatMoney(e.amount, currency)}</span>
+              <span className="font-medium text-expense">{money(e.amount)}</span>
             </li>
           ))}
         </ul>
