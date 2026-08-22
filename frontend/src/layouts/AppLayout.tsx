@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/nav/Sidebar";
 import { QuickActionsMenu } from "../components/nav/QuickActionsMenu";
 import { UserMenu } from "../components/nav/UserMenu";
-import { UpgradeButton } from "../components/nav/UpgradeButton";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
@@ -40,7 +39,6 @@ export function AppLayout() {
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{business?.name}</span>
           </div>
           <div className="flex items-center gap-2">
-            <UpgradeButton />
             <QuickActionsMenu />
             <UserMenu />
           </div>

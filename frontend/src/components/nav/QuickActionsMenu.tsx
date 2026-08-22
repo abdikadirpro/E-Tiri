@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { Button, LockIcon, Modal } from "../ui";
 import type { TranslationKey } from "../../i18n";
 
-const actions: { to: string; key: TranslationKey; icon: string }[] = [
+const navActions: { to: string; key: TranslationKey; icon: string }[] = [
   { to: "/transactions?add=income", key: "quick.addIncome", icon: "➕" },
   { to: "/transactions?add=expense", key: "quick.addExpense", icon: "➖" },
   { to: "/transactions/sales/new", key: "quick.newSale", icon: "🛒" },
@@ -14,6 +15,7 @@ const actions: { to: string; key: TranslationKey; icon: string }[] = [
 
 export function QuickActionsMenu() {
   const [open, setOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -42,7 +44,7 @@ export function QuickActionsMenu() {
       </button>
       {open && (
         <div className="absolute right-0 z-30 mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-800 dark:bg-gray-900">
-          {actions.map((action) => (
+          {navActions.map((action) => (
             <button
               key={action.to}
               onClick={() => go(action.to)}
@@ -52,8 +54,29 @@ export function QuickActionsMenu() {
               {t(action.key)}
             </button>
           ))}
+          <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
+          <button
+            onClick={() => {
+              setOpen(false);
+              setUpgradeOpen(true);
+            }}
+            className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-income hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <LockIcon className="h-4 w-4" />
+            {t("upgrade.button")}
+          </button>
         </div>
       )}
+
+      <Modal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} title={t("upgrade.title")}>
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
+          <LockIcon className="h-7 w-7" />
+        </div>
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.message")}</p>
+        <Button className="mt-4 w-full" onClick={() => setUpgradeOpen(false)}>
+          {t("common.cancel")}
+        </Button>
+      </Modal>
     </div>
   );
 }
