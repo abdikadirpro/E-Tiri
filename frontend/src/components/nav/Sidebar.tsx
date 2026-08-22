@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { Button, LockIcon, Modal } from "../ui";
+import { UpgradeModal } from "../UpgradeModal";
 import type { TranslationKey } from "../../i18n";
 
 interface NavItem {
@@ -33,12 +34,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate();
   const currentTab = new URLSearchParams(location.search).get("tab") ?? "income";
   const [lockedModalOpen, setLockedModalOpen] = useState(false);
-  const [step, setStep] = useState<"locked" | "upgrade">("locked");
-
-  function openLockedModal() {
-    setStep("locked");
-    setLockedModalOpen(true);
-  }
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
   function goToDashboard() {
     setLockedModalOpen(false);
@@ -63,7 +59,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={(e) => {
                   if (item.locked) {
                     e.preventDefault();
-                    openLockedModal();
+                    setLockedModalOpen(true);
                     return;
                   }
                   onNavigate?.();
@@ -89,38 +85,28 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         })}
       </ul>
 
-      <Modal
-        open={lockedModalOpen}
-        onClose={() => setLockedModalOpen(false)}
-        title={step === "locked" ? t("upgrade.featureLockedTitle") : t("upgrade.title")}
-      >
+      <Modal open={lockedModalOpen} onClose={() => setLockedModalOpen(false)} title={t("upgrade.featureLockedTitle")}>
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
           <LockIcon className="h-7 w-7" />
         </div>
-        {step === "locked" ? (
-          <>
-            <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.featureLockedMessage")}</p>
-            <div className="mt-4 space-y-2">
-              <Button className="w-full" onClick={() => setStep("upgrade")}>
-                {t("upgrade.upgradeToPro")}
-              </Button>
-              <button
-                onClick={goToDashboard}
-                className="w-full text-center text-sm text-gray-500 hover:underline dark:text-gray-400"
-              >
-                {t("upgrade.goToDashboard")}
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.message")}</p>
-            <Button className="mt-4 w-full" onClick={() => setLockedModalOpen(false)}>
-              {t("common.cancel")}
-            </Button>
-          </>
-        )}
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.featureLockedMessage")}</p>
+        <div className="mt-4 space-y-2">
+          <Button
+            className="w-full"
+            onClick={() => {
+              setLockedModalOpen(false);
+              setUpgradeModalOpen(true);
+            }}
+          >
+            {t("upgrade.upgradeToPro")}
+          </Button>
+          <button onClick={goToDashboard} className="w-full text-center text-sm text-gray-500 hover:underline dark:text-gray-400">
+            {t("upgrade.goToDashboard")}
+          </button>
+        </div>
       </Modal>
+
+      <UpgradeModal open={upgradeModalOpen} onClose={() => setUpgradeModalOpen(false)} />
     </nav>
   );
 }

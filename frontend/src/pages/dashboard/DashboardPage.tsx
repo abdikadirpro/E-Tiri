@@ -4,7 +4,8 @@ import { analyticsApi, CashFlowPoint, dashboardApi } from "../../api/endpoints";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatMoney } from "../../lib/format";
-import { Button, Card, EyeIcon, EyeOffIcon, LockIcon, Modal, StatCard } from "../../components/ui";
+import { Card, EyeIcon, EyeOffIcon, LockIcon, StatCard } from "../../components/ui";
+import { UpgradeModal } from "../../components/UpgradeModal";
 import type { DashboardSummary } from "../../types";
 
 export function DashboardPage() {
@@ -123,15 +124,7 @@ export function DashboardPage() {
         </ul>
       </Card>
 
-      <Modal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} title={t("upgrade.title")}>
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
-          <LockIcon className="h-7 w-7" />
-        </div>
-        <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.message")}</p>
-        <Button className="mt-4 w-full" onClick={() => setUpgradeOpen(false)}>
-          {t("common.cancel")}
-        </Button>
-      </Modal>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
-import { Button, LockIcon, Modal } from "../ui";
+import { LockIcon } from "../ui";
+import { UpgradeModal } from "../UpgradeModal";
 import type { TranslationKey } from "../../i18n";
 
 const navActions: { to: string; key: TranslationKey; icon: string }[] = [
@@ -68,15 +69,7 @@ export function QuickActionsMenu() {
         </div>
       )}
 
-      <Modal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} title={t("upgrade.title")}>
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-income-light text-income">
-          <LockIcon className="h-7 w-7" />
-        </div>
-        <p className="text-center text-sm text-gray-600 dark:text-gray-300">{t("upgrade.message")}</p>
-        <Button className="mt-4 w-full" onClick={() => setUpgradeOpen(false)}>
-          {t("common.cancel")}
-        </Button>
-      </Modal>
+      <UpgradeModal open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
     </div>
   );
 }

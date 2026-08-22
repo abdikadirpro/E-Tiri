@@ -157,12 +157,25 @@ export function EmptyState({ message }: { message: string }) {
   return <div className="py-10 text-center text-sm text-gray-400">{message}</div>;
 }
 
-export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = "md",
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  size?: "md" | "lg";
+}) {
   if (!open) return null;
+  const maxWidth = size === "lg" ? "max-w-3xl" : "max-w-md";
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl dark:bg-gray-900 sm:rounded-2xl"
+        className={`max-h-[90vh] w-full ${maxWidth} overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl dark:bg-gray-900 sm:rounded-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
