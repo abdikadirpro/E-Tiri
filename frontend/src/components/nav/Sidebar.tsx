@@ -13,7 +13,7 @@ interface NavItem {
 
 const items: NavItem[] = [
   { to: "/", key: "dashboard.title", icon: "🏠", end: true },
-  { to: "/inventory", key: "inventory.title", icon: "📦" },
+  { to: "/inventory", key: "inventory.title", icon: "📦", premium: true },
   { to: "/transactions?tab=sales", key: "sales.title", icon: "🛒", matchTab: "sales" },
   { to: "/transactions?tab=income", key: "income.title", icon: "➕", matchTab: "income" },
   { to: "/transactions?tab=expense", key: "expense.title", icon: "➖", matchTab: "expense" },
@@ -21,7 +21,7 @@ const items: NavItem[] = [
   { to: "/customers", key: "customers.title", icon: "👥" },
   { to: "/suppliers", key: "suppliers.title", icon: "🏭" },
   { to: "/reports", key: "reports.title", icon: "📊", premium: true },
-  { to: "/settings", key: "settings.title", icon: "⚙️" },
+  { to: "/settings", key: "settings.title", icon: "⚙️", premium: true },
 ];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
