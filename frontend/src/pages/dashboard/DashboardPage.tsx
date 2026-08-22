@@ -4,7 +4,7 @@ import { analyticsApi, CashFlowPoint, dashboardApi } from "../../api/endpoints";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { formatMoney } from "../../lib/format";
-import { Card, StatCard } from "../../components/ui";
+import { Card, EyeIcon, EyeOffIcon, StatCard } from "../../components/ui";
 import type { DashboardSummary } from "../../types";
 
 export function DashboardPage() {
@@ -41,11 +41,11 @@ export function DashboardPage() {
           <h1 className="text-xl font-bold">{t("dashboard.title")}</h1>
           <button
             onClick={() => setAmountsHidden((v) => !v)}
-            className="text-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             aria-label={amountsHidden ? "Show amounts" : "Hide amounts"}
             title={amountsHidden ? "Show amounts" : "Hide amounts"}
           >
-            {amountsHidden ? "🙈" : "👁️"}
+            {amountsHidden ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
           </button>
         </div>
         <Link to="/transactions/sales/new" className="rounded-lg bg-dashboard px-4 py-2 text-sm font-semibold text-white">
