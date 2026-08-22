@@ -31,7 +31,7 @@ export function DashboardPage() {
   if (!summary) return null;
 
   function money(value: number) {
-    return amountsHidden ? "••••••" : formatMoney(value, currency);
+    return amountsHidden ? <EyeOffIcon className="inline-block h-5 w-5" /> : formatMoney(value, currency);
   }
 
   return (
