@@ -43,8 +43,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="flex h-full w-60 flex-col overflow-y-auto bg-dashboard py-4 text-white">
-      <ul className="space-y-1 px-3">
+    <nav className="flex h-full w-64 flex-col overflow-y-auto bg-gradient-to-b from-dashboard to-dashboard-dark py-5 text-white">
+      <ul className="space-y-0.5 px-3">
         {items.map((item) => {
           const isTransactionsPath = location.pathname === "/transactions";
           const active = item.matchTab
@@ -66,15 +66,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 }}
                 className={({ isActive }) => {
                   const isCurrent = item.matchTab ? active : isActive;
-                  return `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                    isCurrent ? "bg-white/20" : "hover:bg-white/10 text-white/85"
+                  return `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+                    isCurrent ? "bg-white/15 text-white shadow-sm ring-1 ring-white/10" : "text-white/75 hover:bg-white/10 hover:text-white"
                   }`;
                 }}
               >
                 <span className="text-base">{item.icon}</span>
-                <span className="flex-1">{t(item.key)}</span>
+                <span className="flex-1 tracking-tight">{t(item.key)}</span>
                 {item.premium && (
-                  <span className="flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">
+                  <span className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide ring-1 ring-white/10">
                     <LockIcon className="h-2.5 w-2.5" />
                     {t("upgrade.premiumBadge")}
                   </span>

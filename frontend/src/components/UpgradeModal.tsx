@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
-import { Button, LockIcon, Modal } from "./ui";
+import { Button, CheckIcon, LockIcon, Modal } from "./ui";
 import type { TranslationKey } from "../i18n";
 
 type Period = "monthly" | "sixMonth" | "annual";
@@ -38,13 +38,13 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
         </>
       ) : (
         <div>
-          <div className="mb-5 flex justify-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+          <div className="mb-6 flex justify-center gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
             {(["monthly", "sixMonth", "annual"] as Period[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-                  period === p ? "bg-white text-dashboard shadow dark:bg-gray-900" : "text-gray-500"
+                className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition-all duration-150 ${
+                  period === p ? "bg-white text-dashboard shadow-sm dark:bg-gray-900" : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 }`}
               >
                 {t(`upgrade.period.${p}` as TranslationKey)}
@@ -52,9 +52,10 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
             ))}
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-4 pt-3 sm:grid-cols-3">
             <PlanCard
               icon="⚡"
+              iconTint="bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
               name={t("upgrade.plan.free")}
               badgeLabel={t("upgrade.currentPlan")}
               description={t("upgrade.plan.freeDesc")}
@@ -68,6 +69,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
             />
             <PlanCard
               icon="⚡"
+              iconTint="bg-income-light text-income"
               name={t("upgrade.plan.pro")}
               badgeLabel={t("upgrade.mostPopular")}
               highlight
@@ -85,6 +87,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
             />
             <PlanCard
               icon="🏢"
+              iconTint="bg-dashboard-light text-dashboard"
               name={t("upgrade.plan.business")}
               description={t("upgrade.plan.businessDesc")}
               price={`$${prices.business.toFixed(2)}`}
@@ -108,6 +111,7 @@ export function UpgradeModal({ open, onClose }: { open: boolean; onClose: () => 
 
 function PlanCard({
   icon,
+  iconTint,
   name,
   badgeLabel,
   highlight,
@@ -119,6 +123,7 @@ function PlanCard({
   selectLabel,
 }: {
   icon: ReactNode;
+  iconTint: string;
   name: string;
   badgeLabel?: string;
   highlight?: boolean;
@@ -131,38 +136,42 @@ function PlanCard({
 }) {
   return (
     <div
-      className={`flex flex-col rounded-xl border p-4 ${
-        highlight ? "border-income shadow-md" : "border-gray-200 dark:border-gray-800"
+      className={`relative flex flex-col rounded-2xl border p-5 transition-all duration-200 ${
+        highlight
+          ? "border-income/40 bg-white shadow-lg shadow-income/10 ring-1 ring-income/20 sm:-translate-y-2 dark:bg-gray-900"
+          : "border-gray-200 bg-white hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
       }`}
     >
-      <div className="mb-2 flex items-center justify-between">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-income-light text-base">{icon}</span>
-        {badgeLabel && (
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-              highlight ? "bg-income text-white" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
-            }`}
-          >
+      {highlight && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-income px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+          {badgeLabel}
+        </span>
+      )}
+      <div className="mb-3 flex items-center justify-between">
+        <span className={`flex h-10 w-10 items-center justify-center rounded-xl text-lg ${iconTint}`}>{icon}</span>
+        {!highlight && badgeLabel && (
+          <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             {badgeLabel}
           </span>
         )}
       </div>
-      <h3 className="text-base font-semibold">{name}</h3>
-      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{description}</p>
-      <p className="mt-3 text-2xl font-bold">
-        {price}
-        {priceSuffix && <span className="text-sm font-normal text-gray-400"> {priceSuffix}</span>}
+      <h3 className="text-lg font-bold tracking-tight">{name}</h3>
+      <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{description}</p>
+      <p className="mt-4 tracking-tight">
+        <span className="text-3xl font-bold tabular-nums">{price}</span>
+        {priceSuffix && <span className="ml-1 text-sm font-medium text-gray-400">{priceSuffix}</span>}
       </p>
-      <ul className="mt-3 flex-1 space-y-1.5 text-sm">
+      <div className="my-4 border-t border-gray-100 dark:border-gray-800" />
+      <ul className="flex-1 space-y-2.5 text-sm">
         {features.map((f) => (
-          <li key={f} className="flex items-start gap-1.5 text-gray-600 dark:text-gray-300">
-            <span className="mt-0.5 text-income">✓</span>
+          <li key={f} className="flex items-start gap-2 text-gray-600 dark:text-gray-300">
+            <CheckIcon className={`mt-0.5 h-4 w-4 flex-shrink-0 ${highlight ? "text-income" : "text-dashboard"}`} />
             {f}
           </li>
         ))}
       </ul>
       {onSelect && (
-        <Button variant={highlight ? "income" : "dashboard"} outline={!highlight} className="mt-4 w-full" onClick={onSelect}>
+        <Button variant={highlight ? "income" : "dashboard"} outline={!highlight} className="mt-5 w-full" onClick={onSelect}>
           {selectLabel}
         </Button>
       )}
