@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { LockIcon } from "../ui";
 import type { TranslationKey } from "../../i18n";
 
 interface NavItem {
@@ -54,7 +55,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 <span className="text-base">{item.icon}</span>
                 <span className="flex-1">{t(item.key)}</span>
                 {item.premium && (
-                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">
+                  <span className="flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold">
+                    <LockIcon className="h-2.5 w-2.5" />
                     {t("upgrade.premiumBadge")}
                   </span>
                 )}
